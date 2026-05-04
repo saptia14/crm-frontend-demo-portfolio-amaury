@@ -2,7 +2,7 @@
 service: crm_frontend
 
 # Name of the container image.
-image: crm_frontend
+image: saptia14/crm-frontend-demo-portfolio-amaury
 
 # Deploy to these servers.
 servers:
