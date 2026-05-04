@@ -2,6 +2,7 @@ import Controller from '@ember/controller';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { service } from '@ember/service';
+import config from 'crm-frontend/config/environment';
 
 export default class CheckoutController extends Controller {
   @service session;
@@ -65,7 +66,7 @@ export default class CheckoutController extends Controller {
       // Use the relative `/api/v1/...` URL so Vite's dev proxy forwards to
       // the Rails backend. This avoids CORS issues and works in production
       // when both servers are reverse-proxied behind a single host.
-      const response = await fetch('/api/v1/payments/process', {
+      const response = await fetch(`${config.API_HOST}/${config.API_NAMESPACE}/payments/process`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

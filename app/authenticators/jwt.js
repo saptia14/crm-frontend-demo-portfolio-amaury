@@ -1,4 +1,5 @@
 import BaseAuthenticator from 'ember-simple-auth/authenticators/base';
+import config from 'crm-frontend/config/environment';
 
 export default class JwtAuthenticator extends BaseAuthenticator {
   async restore(data) {
@@ -11,7 +12,7 @@ export default class JwtAuthenticator extends BaseAuthenticator {
 
   async authenticate(email, password) {
     console.debug('JwtAuthenticator: Authenticating user...', email);
-    const response = await fetch('/api/v1/login', {
+    const response = await fetch(`${config.API_HOST}/${config.API_NAMESPACE}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -48,7 +49,7 @@ export default class JwtAuthenticator extends BaseAuthenticator {
     const token = data?.token;
     
     if (token) {
-      await fetch('/api/v1/logout', {
+      await fetch(`${config.API_HOST}/${config.API_NAMESPACE}/logout`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
