@@ -25,7 +25,7 @@ module.exports = function (environment) {
       routeAfterAuthentication: 'dashboard',
     },
 
-    API_HOST: process.env.API_HOST || (environment === 'production' ? 'https://api-demo.soyamaury.dev' : 'http://localhost:3000'),
+    API_HOST: process.env.VITE_API_HOST || (environment === 'production' ? 'https://api-demo.soyamaury.dev' : 'http://localhost:3000'),
     API_NAMESPACE: 'api/v1',
   };
 

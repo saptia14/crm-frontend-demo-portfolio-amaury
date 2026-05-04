@@ -12,8 +12,9 @@ COPY . .
 
 # Build the application
 # We use an argument to pass the API URL at build time
-ARG API_HOST
-ENV API_HOST=$API_HOST
+ARG VITE_API_HOST
+ENV VITE_API_HOST=$VITE_API_HOST
+ENV EMBER_ENV=production
 RUN npm run build
 
 # Stage 2: Serve

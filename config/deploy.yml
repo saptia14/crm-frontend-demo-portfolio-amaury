@@ -27,4 +27,4 @@ registry:
 builder:
   arch: amd64
   args:
-    API_HOST: https://api-demo.soyamaury.dev
+    VITE_API_HOST: https://api-demo.soyamaury.dev
