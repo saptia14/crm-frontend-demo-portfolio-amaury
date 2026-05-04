@@ -1,5 +1,5 @@
-import Service from '@ember/service';
-import { service } from '@ember/service';
+import Service, { service } from '@ember/service';
+import config from 'crm-frontend/config/environment';
 
 export default class AnalyticsService extends Service {
   @service session;
@@ -14,7 +14,7 @@ export default class AnalyticsService extends Service {
   }
 
   async fetchJson(path, params = {}) {
-    const url = new URL(path, window.location.origin);
+    const url = new URL(path, config.API_HOST);
 
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {

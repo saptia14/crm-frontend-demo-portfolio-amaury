@@ -1,5 +1,5 @@
-import Service from '@ember/service';
-import { service } from '@ember/service';
+import Service, { service } from '@ember/service';
+import config from 'crm-frontend/config/environment';
 
 function appendParams(searchParams, value, prefix = '') {
   Object.entries(value).forEach(([key, entry]) => {
@@ -29,7 +29,7 @@ export default class CsvExportService extends Service {
   }
 
   async download(path, params, filename) {
-    const url = new URL(path, window.location.origin);
+    const url = new URL(path, config.API_HOST);
     const searchParams = new URLSearchParams();
     appendParams(searchParams, params);
     searchParams.forEach((value, key) => url.searchParams.set(key, value));
