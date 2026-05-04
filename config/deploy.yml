@@ -1,5 +1,5 @@
 # Name of your application.
-service: crm_frontend
+service: crm-frontend
 
 # Name of the container image.
 image: saptia14/crm-frontend-demo-portfolio-amaury
@@ -13,6 +13,7 @@ servers:
 proxy:
   ssl: true
   host: crm-demo.soyamaury.dev
+  app_port: 80
 
 # Where you keep your container images.
 registry:
@@ -26,4 +27,4 @@ registry:
 builder:
   arch: amd64
   args:
-    API_URL: https://api-demo.soyamaury.dev
+    API_HOST: https://api-demo.soyamaury.dev

@@ -12,8 +12,8 @@ COPY . .
 
 # Build the application
 # We use an argument to pass the API URL at build time
-ARG API_URL
-ENV API_URL=$API_URL
+ARG API_HOST
+ENV API_HOST=$API_HOST
 RUN npm run build
 
 # Stage 2: Serve
