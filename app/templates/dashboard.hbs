@@ -1,0 +1,202 @@
+<div class="space-y-8">
+  {{!-- Page Header --}}
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-900">
+        Welcome back{{#if this.currentUser.user.firstName}}, {{this.currentUser.user.firstName}}{{/if}}
+      </h1>
+      <p class="mt-1 text-sm text-slate-500">Here's an overview of your CRM activity.</p>
+    </div>
+    <span class="badge-primary self-start uppercase tracking-wider">
+      {{this.currentUser.user.role}}
+    </span>
+  </div>
+
+  <div class="card">
+    <div class="card-body space-y-4">
+      <div class="flex flex-col lg:flex-row lg:items-end gap-4">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <button type="button" class="btn-ghost" {{on "click" (fn this.setPresetRange 7)}}>7d</button>
+          <button type="button" class="btn-ghost" {{on "click" (fn this.setPresetRange 30)}}>30d</button>
+          <button type="button" class="btn-ghost" {{on "click" (fn this.setPresetRange 90)}}>90d</button>
+          <button type="button" class="btn-ghost" {{on "click" (fn this.setPresetRange 365)}}>1y</button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 flex-1">
+          <div>
+            <label class="form-label" for="dashboard-granularity">Granularity</label>
+            <select id="dashboard-granularity" class="form-input" {{on "change" this.setGranularity}}>
+              <option value="hour" selected={{eq this.granularity "hour"}}>Hour</option>
+              <option value="day" selected={{eq this.granularity "day"}}>Day</option>
+              <option value="month" selected={{eq this.granularity "month"}}>Month</option>
+              <option value="year" selected={{eq this.granularity "year"}}>Year</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="form-label" for="dashboard-stage">Stage</label>
+            <select id="dashboard-stage" class="form-input" {{on "change" this.setStage}}>
+              <option value="all" selected={{eq this.stage "all"}}>All</option>
+              <option value="open" selected={{eq this.stage "open"}}>Open</option>
+              <option value="won" selected={{eq this.stage "won"}}>Won</option>
+              <option value="lost" selected={{eq this.stage "lost"}}>Lost</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="form-label" for="dashboard-from">From</label>
+            <Input id="dashboard-from" @type={{if (eq this.granularity "hour") "datetime-local" "date"}} @value={{this.from}} class="form-input" {{on "change" this.setFrom}} />
+          </div>
+
+          <div>
+            <label class="form-label" for="dashboard-to">To</label>
+            <Input id="dashboard-to" @type={{if (eq this.granularity "hour") "datetime-local" "date"}} @value={{this.to}} class="form-input" {{on "change" this.setTo}} />
+          </div>
+        </div>
+      </div>
+
+      {{#if this.hasUserFilter}}
+        <div class="max-w-sm">
+          <label class="form-label" for="dashboard-user">Sales rep</label>
+          <select id="dashboard-user" class="form-input" {{on "change" this.setUserId}}>
+            <option value="" selected={{eq this.userId ""}}>All reps</option>
+            {{#each this.users as |user|}}
+              <option value={{user.id}} selected={{eq this.userId user.id}}>
+                {{user.fullName}} · {{user.role}}
+              </option>
+            {{/each}}
+          </select>
+        </div>
+      {{/if}}
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+    <div class="xl:col-span-2">
+      <RevenueChart
+        @granularity={{this.granularity}}
+        @stage={{this.stage}}
+        @from={{this.from}}
+        @to={{this.to}}
+        @userId={{this.userId}}
+      />
+    </div>
+    <PipelineDoughnut @from={{this.from}} @to={{this.to}} @userId={{this.userId}} />
+  </div>
+
+  {{!-- KPI Cards --}}
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+    {{!-- Total Contacts --}}
+    <LinkTo @route="contacts" class="stat-card group hover:border-primary-200 transition-colors block">
+      <div class="flex items-center justify-between">
+        <p class="stat-card-title">Total Contacts</p>
+        <div class="h-10 w-10 rounded-lg bg-primary-50 flex items-center justify-center text-primary-600 group-hover:bg-primary-100 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+        </div>
+      </div>
+      <p class="stat-card-value">{{this.model.totalContacts}}</p>
+      <div class="mt-3 flex items-center gap-1 text-xs text-slate-500">
+        <span>View all contacts</span>
+        <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+        </svg>
+      </div>
+    </LinkTo>
+
+    {{!-- Open Deals --}}
+    <LinkTo @route="deals" class="stat-card group hover:border-primary-200 transition-colors block">
+      <div class="flex items-center justify-between">
+        <p class="stat-card-title">Open Deals</p>
+        <div class="h-10 w-10 rounded-lg bg-success-50 flex items-center justify-center text-success-600 group-hover:bg-emerald-100 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+      </div>
+      <p class="stat-card-value">{{this.model.openDeals}}</p>
+      <div class="mt-3 flex items-center text-sm text-slate-500">
+        <span class="font-semibold text-success-600">${{format-money this.model.pipelineValue}}</span>
+        <span class="ml-1 text-xs">pipeline value</span>
+      </div>
+    </LinkTo>
+
+    {{!-- Closed Won --}}
+    <LinkTo @route="deals" class="stat-card group hover:border-primary-200 transition-colors block">
+      <div class="flex items-center justify-between">
+        <p class="stat-card-title">Closed Won</p>
+        <div class="h-10 w-10 rounded-lg bg-warning-50 flex items-center justify-center text-warning-500 group-hover:bg-amber-100 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+          </svg>
+        </div>
+      </div>
+      <p class="stat-card-value">{{this.model.wonDeals}}</p>
+      <div class="mt-3 flex items-center text-sm text-slate-500">
+        <span class="font-semibold text-success-600">${{format-money this.model.wonRevenue}}</span>
+        <span class="ml-1 text-xs">won revenue (recent)</span>
+      </div>
+    </LinkTo>
+  </div>
+
+  {{!-- Recent Activity --}}
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="text-base font-semibold text-slate-900">Recent Deals</h2>
+        <LinkTo @route="deals" class="text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors">View all</LinkTo>
+      </div>
+      <div class="divide-y divide-slate-100">
+        {{#each this.model.recentDeals as |deal|}}
+          <div class="px-6 py-4 flex items-center gap-4 hover:bg-slate-50 transition-colors">
+            <div class="h-9 w-9 rounded-lg
+              {{if deal.isWon "bg-success-50 text-success-600"
+                (if deal.isLost "bg-danger-50 text-danger-500" "bg-primary-50 text-primary-600")
+              }}
+              flex items-center justify-center flex-shrink-0">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V7m0 1v8m0 0v1"/>
+              </svg>
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="text-sm text-slate-800 truncate">{{deal.name}}</p>
+              <p class="text-xs text-slate-400 mt-0.5">{{deal.stage}}</p>
+            </div>
+            <span class="badge-success">${{format-money deal.amount}}</span>
+          </div>
+        {{else}}
+          <div class="px-6 py-12 text-center text-sm text-slate-400">No deals yet.</div>
+        {{/each}}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 class="text-base font-semibold text-slate-900">Recent Contacts</h2>
+        <LinkTo @route="contacts" class="text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors">View all</LinkTo>
+      </div>
+      <div class="divide-y divide-slate-100">
+        {{#each this.model.recentContacts as |contact|}}
+          <div class="px-6 py-4 flex items-center gap-4 hover:bg-slate-50 transition-colors">
+            <div class="h-9 w-9 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold text-xs flex-shrink-0">
+              {{substring contact.firstName 0 1}}{{substring contact.lastName 0 1}}
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="text-sm text-slate-800 truncate">{{contact.fullName}}</p>
+              <p class="text-xs text-slate-400 mt-0.5 truncate">{{contact.email}}</p>
+            </div>
+            <span class="badge-neutral">Lead</span>
+          </div>
+        {{else}}
+          <div class="px-6 py-12 text-center text-sm text-slate-400">No contacts yet.</div>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+</div>

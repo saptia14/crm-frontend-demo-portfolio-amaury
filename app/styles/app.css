@@ -1,0 +1,158 @@
+@import "tailwindcss";
+@source "../../app";
+@source "../../index.html";
+
+/* ============================================================
+   CRM Ecosystem — Design System Tokens
+   ============================================================ */
+
+@theme {
+  --color-primary-50: #eef2ff;
+  --color-primary-100: #e0e7ff;
+  --color-primary-200: #c7d2fe;
+  --color-primary-300: #a5b4fc;
+  --color-primary-400: #818cf8;
+  --color-primary-500: #6366f1;
+  --color-primary-600: #4f46e5;
+  --color-primary-700: #4338ca;
+  --color-primary-800: #3730a3;
+  --color-primary-900: #312e81;
+
+  --color-success-50: #ecfdf5;
+  --color-success-500: #10b981;
+  --color-success-600: #059669;
+  --color-success-700: #047857;
+
+  --color-danger-50: #fff1f2;
+  --color-danger-500: #f43f5e;
+  --color-danger-600: #e11d48;
+
+  --color-warning-50: #fffbeb;
+  --color-warning-500: #f59e0b;
+
+  --color-sidebar: #0f172a;
+  --color-sidebar-hover: #1e293b;
+  --color-sidebar-active: #6366f1;
+  --color-sidebar-border: #1e293b;
+
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-800 antialiased;
+    font-family: var(--font-sans);
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight text-slate-900;
+  }
+}
+
+/* ============================================================
+   Tailwind v4 Utilities — Reusable Components
+   ============================================================ */
+
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg
+         transition-all duration-150 ease-in-out
+         focus:outline-none focus:ring-2 focus:ring-offset-2
+         disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+@utility btn-primary {
+  @apply btn bg-primary-600 text-white shadow-sm
+         hover:bg-primary-700 focus:ring-primary-500
+         active:bg-primary-800;
+}
+
+@utility btn-secondary {
+  @apply btn bg-white text-slate-700 border border-slate-300 shadow-sm
+         hover:bg-slate-50 focus:ring-primary-500;
+}
+
+@utility btn-danger {
+  @apply btn bg-danger-600 text-white shadow-sm
+         hover:bg-danger-500 focus:ring-danger-500;
+}
+
+@utility btn-ghost {
+  @apply btn text-slate-500 hover:text-slate-700 hover:bg-slate-100;
+}
+
+@utility btn-sm {
+  @apply px-3 py-1.5 text-xs;
+}
+
+@utility btn-lg {
+  @apply px-6 py-3 text-base;
+}
+
+@utility card {
+  @apply bg-white rounded-xl border border-slate-200 shadow-sm;
+}
+
+@utility card-header {
+  @apply px-6 py-4 border-b border-slate-100 flex items-center justify-between;
+}
+
+@utility card-body {
+  @apply p-6;
+}
+
+@utility form-input {
+  @apply block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5
+         text-sm text-slate-900 placeholder:text-slate-400
+         shadow-sm
+         focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500
+         transition-colors duration-150;
+}
+
+@utility form-label {
+  @apply block text-sm font-medium text-slate-700 mb-1.5;
+}
+
+@utility badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+}
+
+@utility badge-primary {
+  @apply badge bg-primary-50 text-primary-700;
+}
+
+@utility badge-success {
+  @apply badge bg-success-50 text-success-700;
+}
+
+@utility badge-warning {
+  @apply badge bg-warning-50 text-warning-500;
+}
+
+@utility badge-danger {
+  @apply badge bg-danger-50 text-danger-600;
+}
+
+@utility badge-neutral {
+  @apply badge bg-slate-100 text-slate-600;
+}
+
+@utility stat-card {
+  @apply card p-6;
+}
+
+@utility stat-card-title {
+  @apply text-xs font-semibold text-slate-500 uppercase tracking-wider;
+}
+
+@utility stat-card-value {
+  @apply mt-2 text-3xl font-bold text-slate-900;
+}
+
+@utility sidebar-link {
+  @apply flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg
+         text-slate-400 transition-all duration-150
+         hover:bg-sidebar-hover hover:text-white;
+}
+
+@utility sidebar-link-active {
+  @apply sidebar-link bg-primary-600/10 text-primary-400;
+}

@@ -1,0 +1,65 @@
+<div class="space-y-6">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-900">Team Management</h1>
+      <p class="mt-1 text-sm text-slate-500">Manage user roles and permissions within your organization.</p>
+    </div>
+  </div>
+
+  <div class="card overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-slate-200">
+        <thead class="bg-slate-50">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">User</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Role</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-slate-200">
+          {{#each @model as |user|}}
+            <tr class="hover:bg-slate-50 transition-colors">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  <div class="h-10 w-10 flex-shrink-0 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold uppercase">
+                    {{substring user.firstName 0 1}}{{substring user.lastName 0 1}}
+                  </div>
+                  <div class="ml-4">
+                    <div class="text-sm font-medium text-slate-900">{{user.fullName}}</div>
+                    <div class="text-sm text-slate-500">{{user.email}}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                {{#if user.isSuperAdmin}}
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                    Super Admin
+                  </span>
+                {{else}}
+                  <div class="relative max-w-[160px]">
+                    <select
+                      disabled={{not this.currentUser.user.isSuperAdmin}}
+                      class="block w-full pl-3 pr-10 py-1.5 text-sm border-slate-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 rounded-md {{if (not this.currentUser.user.isSuperAdmin) 'bg-slate-50 text-slate-500 cursor-not-allowed'}}"
+                      {{on "change" (fn this.updateRole user)}}
+                    >
+                      {{#each this.roles as |roleOption|}}
+                        <option value={{roleOption}} selected={{eq user.role roleOption}}>
+                          {{capitalize roleOption}}
+                        </option>
+                      {{/each}}
+                    </select>
+                  </div>
+                {{/if}}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                  Active
+                </span>
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

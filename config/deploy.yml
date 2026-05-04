@@ -1,0 +1,29 @@
+# Name of your application.
+service: crm_frontend
+
+# Name of the container image.
+image: crm_frontend
+
+# Deploy to these servers.
+servers:
+  web:
+    - 157.230.10.197
+
+# Enable SSL auto certification via Let's Encrypt and routing via host header.
+proxy:
+  ssl: true
+  host: crm-demo.soyamaury.dev
+
+# Where you keep your container images.
+registry:
+  server: ghcr.io
+  username:
+    - KAMAL_REGISTRY_USERNAME
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+# Build arguments (passing the API URL to Vite at build time).
+builder:
+  arch: amd64
+  args:
+    API_URL: https://api-demo.soyamaury.dev

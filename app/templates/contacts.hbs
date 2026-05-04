@@ -1,0 +1,238 @@
+<div class="space-y-6">
+  {{!-- Page Header --}}
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-900">Contacts</h1>
+      <p class="mt-1 text-sm text-slate-500">
+        {{this.totalContacts}}
+        {{if (eq this.totalContacts 1) "contact" "contacts"}}
+        in your CRM.
+      </p>
+    </div>
+    <div class="flex flex-wrap gap-2 self-start">
+      {{#if (this.permissions.can "contacts" "export")}}
+        <button type="button" {{on "click" this.exportCsv}} class="btn-secondary">
+          Export CSV
+        </button>
+      {{/if}}
+
+      {{#if (this.permissions.can "contacts" "write")}}
+        <button type="button" {{on "click" this.openCreate}} class="btn-primary">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          Add Contact
+        </button>
+      {{/if}}
+    </div>
+  </div>
+
+  {{!-- Filter Bar --}}
+  <div class="card">
+    <div class="card-body">
+      <form {{on "submit" this.applyFilters}} class="flex flex-col md:flex-row gap-3">
+        <div class="flex-1">
+          <label for="contact-search" class="sr-only">Search</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+            </div>
+            <Input
+              @type="search"
+              @value={{this.q}}
+              id="contact-search"
+              class="form-input pl-10"
+              placeholder="Search by name, email, or phone..."
+            />
+          </div>
+        </div>
+        <div class="w-full md:w-56">
+          <Input
+            @type="text"
+            @value={{this.tags}}
+            class="form-input"
+            placeholder="Tags (e.g. vip, executive)"
+          />
+        </div>
+        <button type="submit" class="btn-secondary">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+          </svg>
+          Filter
+        </button>
+        {{#if this.hasFilters}}
+          <button type="button" {{on "click" this.clearFilters}} class="btn-ghost">
+            Clear
+          </button>
+        {{/if}}
+      </form>
+    </div>
+  </div>
+
+  {{!-- Contact Grid --}}
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {{#each this.contacts as |contact|}}
+      <div class="card group hover:border-primary-200 hover:shadow-md transition-all duration-200 overflow-hidden">
+        <div class="card-body">
+          <div class="flex items-start justify-between gap-2">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="h-11 w-11 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold text-sm flex-shrink-0">
+                {{substring contact.firstName 0 1}}{{substring contact.lastName 0 1}}
+              </div>
+              <div class="min-w-0">
+                <h3 class="text-sm font-semibold text-slate-900 group-hover:text-primary-600 transition-colors truncate">
+                  {{contact.fullName}}
+                </h3>
+                <p class="text-xs text-slate-400 truncate">{{contact.company.name}}</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-1 flex-shrink-0">
+              {{#if (this.permissions.can "contacts" "write")}}
+                <button
+                  type="button"
+                  {{on "click" (fn this.openEdit contact)}}
+                  class="text-slate-300 hover:text-primary-600 transition-colors p-1"
+                  title="Edit Contact"
+                >
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                  </svg>
+                </button>
+              {{/if}}
+              {{#if (this.permissions.can "contacts" "delete")}}
+                <button
+                  type="button"
+                  {{on "click" (fn this.deleteContact contact)}}
+                  class="text-slate-300 hover:text-danger-500 transition-colors p-1"
+                  title="Delete Contact"
+                >
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                </button>
+              {{/if}}
+            </div>
+          </div>
+
+          <div class="mt-4 space-y-2">
+            <div class="flex items-center gap-2 text-xs text-slate-500">
+              <svg class="h-3.5 w-3.5 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+              <span class="truncate">{{contact.email}}</span>
+            </div>
+            <div class="flex items-center gap-2 text-xs text-slate-500">
+              <svg class="h-3.5 w-3.5 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+              </svg>
+              <span>{{if contact.phone contact.phone "—"}}</span>
+            </div>
+          </div>
+
+          {{#if contact.tagList}}
+            <div class="mt-4 flex flex-wrap gap-1.5">
+              {{#each contact.tagList as |tag|}}
+                <span class="badge-neutral text-[10px]">{{tag}}</span>
+              {{/each}}
+            </div>
+          {{/if}}
+        </div>
+      </div>
+    {{else}}
+      <div class="col-span-full card">
+        <div class="card-body py-16 flex flex-col items-center justify-center text-center">
+          <div class="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-4">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+          </div>
+          <p class="text-sm font-medium text-slate-600">No contacts found</p>
+          <p class="text-xs text-slate-400 mt-1">
+            {{#if this.hasFilters}}
+              Try adjusting your filters or
+              <button type="button" {{on "click" this.clearFilters}} class="text-primary-600 hover:underline">clear them</button>.
+            {{else}}
+              Click "Add Contact" to create your first one.
+            {{/if}}
+          </p>
+        </div>
+      </div>
+    {{/each}}
+  </div>
+</div>
+
+{{!-- Create / Edit Modal --}}
+{{#if this.showCreateModal}}
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50">
+    <div class="card w-full max-w-lg shadow-2xl">
+      <div class="card-header">
+        <h2 class="text-base font-semibold text-slate-900">
+          {{if this.editingContact "Edit Contact" "New Contact"}}
+        </h2>
+        <button type="button" {{on "click" this.closeModal}} class="text-slate-400 hover:text-slate-700">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <form {{on "submit" this.saveContact}} class="card-body space-y-4">
+        {{#if this.saveError}}
+          <div class="rounded-lg bg-danger-50 border border-rose-200 p-3 text-xs text-danger-600">
+            {{this.saveError}}
+          </div>
+        {{/if}}
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="contact-fname" class="form-label">First name</label>
+            <Input id="contact-fname" @type="text" @value={{this.formFirstName}} required class="form-input" />
+          </div>
+          <div>
+            <label for="contact-lname" class="form-label">Last name</label>
+            <Input id="contact-lname" @type="text" @value={{this.formLastName}} required class="form-input" />
+          </div>
+        </div>
+        <div>
+          <label for="contact-email" class="form-label">Email</label>
+          <Input id="contact-email" @type="email" @value={{this.formEmail}} required class="form-input" />
+        </div>
+        <div>
+          <label for="contact-phone" class="form-label">Phone</label>
+          <Input id="contact-phone" @type="text" @value={{this.formPhone}} class="form-input" placeholder="555-123-4567" />
+        </div>
+        <div>
+          <label for="contact-company" class="form-label">Company</label>
+          <select
+            id="contact-company"
+            class="form-input"
+            {{on "change" this.setCompanyId}}
+          >
+            <option value="">— None —</option>
+            {{#each this.companies as |company|}}
+              <option value={{company.id}} selected={{eq this.formCompanyId company.id}}>
+                {{company.name}}
+              </option>
+            {{/each}}
+          </select>
+        </div>
+        <div>
+          <label for="contact-tags" class="form-label">Tags <span class="text-slate-400 font-normal">(comma-separated)</span></label>
+          <Input id="contact-tags" @type="text" @value={{this.formTags}} class="form-input" placeholder="vip, decision-maker" />
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" {{on "click" this.closeModal}} class="btn-secondary">Cancel</button>
+          <button type="submit" class="btn-primary">
+            {{if this.editingContact "Save Changes" "Create Contact"}}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+{{/if}}
